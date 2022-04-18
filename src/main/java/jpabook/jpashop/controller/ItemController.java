@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -23,7 +24,7 @@ public class ItemController {
 
     @GetMapping("/items/new")
     public String createBook(Model model) {
-        model.addAttribute("form", new BookForm());
+        model.addAttribute("bookForm", new BookForm());
         return "items/createItemForm";
     }
 
@@ -58,27 +59,20 @@ public class ItemController {
         bookForm.setAuthor(book.getAuthor());
         bookForm.setIsbn(book.getIsbn());
 
-        model.addAttribute("form", bookForm);
+        model.addAttribute("bookForm", bookForm);
         return "items/updateItemForm";
     }
 
+    /**
+     * 상품 수정(updateItem()), 권장 코드
+     */
     @PostMapping("/items/{itemId}/edit")
-    public String updateItem(@Valid BookForm bookForm, BindingResult result) {
+    public String updateItem(@Valid @ModelAttribute("bookForm") BookForm bookForm, BindingResult result) {
         if (result.hasErrors()) {
             return "items/updateItemForm";
         }
 
-        Book book = new Book();
-
-        book.setId(bookForm.getId());
-        book.setName(bookForm.getName());
-        book.setPrice(bookForm.getPrice());
-        book.setStockQuantity(bookForm.getStockQuantity());
-        book.setAuthor(bookForm.getAuthor());
-        book.setIsbn(bookForm.getIsbn());
-
-        itemService.saveItem(book);
-
+        itemService.updateBook(bookForm);
         return "redirect:/items";
     }
 }

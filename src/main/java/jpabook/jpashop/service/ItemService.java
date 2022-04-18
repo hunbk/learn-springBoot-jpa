@@ -1,7 +1,9 @@
 package jpabook.jpashop.service;
 
+import jpabook.jpashop.domain.item.Book;
 import jpabook.jpashop.domain.item.Item;
 import jpabook.jpashop.repository.ItemRepository;
+import jpabook.jpashop.web.BookForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,5 +28,25 @@ public class ItemService {
 
     public List<Item> findItems() {
         return itemRepository.findAll();
+    }
+
+    /**
+     * 영속성 컨텍스트가 자동 변경
+     */
+    @Transactional
+    public void updateItem(Long id, String name, int price) {
+        Item item = findOne(id);
+        item.setName(name);
+        item.setPrice(price);
+    }
+
+    @Transactional
+    public void updateBook(BookForm bookForm) {
+        Book book = (Book) findOne(bookForm.getId());
+        book.setName(bookForm.getName());
+        book.setPrice(bookForm.getPrice());
+        book.setStockQuantity(bookForm.getStockQuantity());
+        book.setAuthor(bookForm.getAuthor());
+        book.setIsbn(bookForm.getIsbn());
     }
 }
